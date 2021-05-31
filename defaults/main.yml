@@ -1,5 +1,5 @@
 ---
-gitea_version: "1.13.7"
+gitea_version: "1.14.2"
 gitea_version_check: true
 gitea_dl_url: "https://github.com/go-gitea/gitea/releases/download/v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ gitea_arch }}"
 gitea_gpg_key: "7C9E68152594688862D62AF62D9AE806EC1592E2"
@@ -12,7 +12,7 @@ gitea_home: "/var/lib/gitea"
 gitea_shell: "/bin/false"
 gitea_systemd_cap_net_bind_service: false
 
-gitea_repository_root: "{{ gitea_home }}"
+gitea_repository_root: "{{ gitea_home }}/git"
 gitea_user_repo_limit: -1
 
 gitea_http_domain: localhost
@@ -26,7 +26,6 @@ gitea_offline_mode: true
 gitea_lfs_server_enabled: false
 gitea_lfs_content_path: "{{ gitea_home }}/data/lfs"
 gitea_lfs_jwt_secret: ''
-gitea_lfs_content_path: "data/lfs"
 gitea_lfs_secret: SomethingVeryLong
 gitea_lfs_mode: true
 
@@ -37,6 +36,7 @@ gitea_db_user: gitea
 gitea_db_password: lel
 gitea_db_ssl: disable
 gitea_db_path: "{{ gitea_home }}/data/gitea.db"
+gitea_db_log_sql: true
 
 gitea_ssh_listen: 0.0.0.0
 gitea_ssh_domain: localhost
@@ -71,7 +71,7 @@ gitea_mailer_user: ""
 gitea_mailer_password: ""
 gitea_mailer_type: smtp
 
-gitea_fail2ban_enabled: false
+gitea_fail2ban_enabled: true
 gitea_fail2ban_jail_maxretry: 10
 gitea_fail2ban_jail_findtime: 3600
 gitea_fail2ban_jail_bantime: 900
@@ -93,8 +93,11 @@ gitea_repo_exclude_vendored: true
 gitea_repo_indexer_max_file_size: 1048576
 
 gitea_log_level: Info
+gitea_log_enable_xorm_log: true
+
+gitea_create_firstuser_enabled: false
 
 gitea_extra_config: ""
 
-gitea_backup_on_upgrade: false
+gitea_backup_on_upgrade: true
 gitea_backup_location: "{{ gitea_home }}/backups/"

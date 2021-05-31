@@ -3,7 +3,7 @@
   ansible.builtin.service:
     name: gitea
     state: restarted
-  when: ansible_service_mgr == "systemd"
+  when: (ansible_service_mgr == "systemd") or (ansible_service_mgr == "openrc")
 
 - name: "Reload systemd"
   ansible.builtin.systemd:
@@ -14,4 +14,10 @@
   ansible.builtin.service:
     name: fail2ban
     state: restarted
-  when: ansible_service_mgr == "systemd"
+  when: (ansible_service_mgr == "systemd") or (ansible_service_mgr == "openrc")
+
+- name: Enable service gitea
+  ansible.builtin.service:
+    name: gitea
+    enabled: yes
+  when: ansible_service_mgr == "openrc"

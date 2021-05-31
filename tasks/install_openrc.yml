@@ -1,0 +1,12 @@
+---
+- name: "Setup openrc service"
+  ansible.builtin.template:
+    src: gitea.openrc.j2
+    dest: /etc/init.d/gitea
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - "Enable service gitea"
+    - "Reload systemd"
+    - "Restart gitea"

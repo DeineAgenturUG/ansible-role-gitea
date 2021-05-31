@@ -1,0 +1,6 @@
+---
+gitea_dependencies:
+  - git
+  - git-lfs
+  - gnupg
+  - xz

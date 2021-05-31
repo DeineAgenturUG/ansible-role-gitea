@@ -1,0 +1,8 @@
+---
+- name: "Create gitea directory: {{item}}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ gitea_user }}"
+    group: "{{ gitea_group }}"
+    mode: 'u=rwX,g=rX,o='

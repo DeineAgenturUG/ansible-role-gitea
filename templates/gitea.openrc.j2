@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+
+supervisor=supervise-daemon
+name=gitea
+command="/usr/local/bin/gitea"
+command_user="{{ gitea_user }}"
+command_args="web -c '/etc/gitea/gitea.ini' -C '{{ gitea_home }}/custom'"
+supervise_daemon_args="--env GITEA_WORK_DIR='{{ gitea_home }}' --chdir '{{ gitea_home }}' --stdout '/var/log/gitea/http.log' --stderr '/var/log/gitea/http.log'"
+pidfile="/run/gitea.pid"
+
+depend() {
+        use logger dns
+        need net
+        after firewall mysql postgresql
+}

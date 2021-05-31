@@ -1,30 +1,34 @@
 ---
 - name: Get service facts
-  service_facts:
+  ansible.builtin.service_facts:
+
+- name: Is gitea already running?
+  shell: service gitea status warn=false
+  register: _svc_gitea
+  failed_when: _svc_gitea.rc != 0 and ("unrecognized service" not in _svc_gitea.stderr)
+  changed_when: _svc_gitea.rc != 0
+  ignore_errors: true
 
 - block:
     - name: Stopping gitea before upgrade
-      service:
+      ansible.builtin.service:
         name: gitea
         state: stopped
 
     - name: "Create backup directory"
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: "{{ gitea_user }}"
         group: "{{ gitea_group }}"
-        mode: 'u=rwx,g=rx,o='
+        mode: "u=rwx,g=rx,o="
       with_items:
         - "{{ gitea_backup_location }}"
 
     - name: Backing up gitea before upgrade
-      command:
+      ansible.builtin.command:
         cmd: "/usr/local/bin/gitea dump -c /etc/gitea/gitea.ini"
         chdir: "{{ gitea_backup_location }}"
       become: true
       become_user: "{{ gitea_user }}"
-  when:
-    - ansible_facts.services["gitea.service"] is defined
-    - ansible_facts.services["gitea.service"].state == "running"
-    - gitea_active_version.stdout != gitea_version
+  when: (((ansible_service_mgr == "systemd") and (ansible_facts.services["gitea.service"] is defined) and (ansible_facts.services["gitea.service"].state == "running")) or ((ansible_service_mgr == "openrc") and (_svc_gitea.rc == 0))) and (gitea_active_version.stdout != gitea_version)

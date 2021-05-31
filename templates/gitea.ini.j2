@@ -78,6 +78,7 @@ PASSWD   = {{ gitea_db_password }}
 SSL_MODE = {{ gitea_db_ssl }}
 ; For "sqlite3" and "tidb", use an absolute path when you start gitea as service
 PATH     = {{ gitea_db_path }}
+LOG_SQL  = {{ gitea_db_log_sql }}
 
 [indexer]
 ; Issue indexer storage path, available when ISSUE_INDEXER_TYPE is bleve
@@ -186,6 +187,7 @@ BUFFER_LEN           = 10000
 ; Either "Trace", "Debug", "Info", "Warn", "Error", "Critical", default is "Trace"
 LEVEL                = {{ gitea_log_level }}
 REDIRECT_MACARON_LOG = false
+ENABLE_XORM_LOG      = {{ gitea_log_enable_xorm_log }}
 
 [oauth2]
 ENABLE     = {{ gitea_oauth2_enabled }}

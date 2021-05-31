@@ -21,6 +21,10 @@
   failed_when: false
   when: gitea_version_check|bool
 
+- name: backup gitea before update
+  include_tasks: backup.yml
+  when: gitea_backup_on_upgrade|bool
+
 - name: "Download the binary"
   ansible.builtin.get_url:
     url: "{{ gitea_dl_url }}"
@@ -32,9 +36,9 @@
   notify: "Restart gitea"
   when: (not gitea_version_check|bool) or (not ansible_check_mode and (gitea_active_version.stdout != gitea_version))
 
-- include: create_user.yml
+- include_tasks: create_user.yml
 
-- name: "Create config and data directory"
+- name: "Create config and log directory"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -43,15 +47,10 @@
     mode: '0755'
   with_items:
     - "/etc/gitea"
+    - "/var/log/gitea"
 
-- name: "Create data directory"
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ gitea_user }}"
-    group: "{{ gitea_group }}"
-    mode: 'u=rwX,g=rX,o='
-    recurse: true
+- name: "Create gitea home and data directory"
+  include_tasks: create_gitea_directories.yml file={{item}}
   with_items:
     - "{{ gitea_home }}"
     - "{{ gitea_home }}/data"
@@ -66,6 +65,7 @@
   when: ansible_service_mgr == "systemd"
 
 - include_tasks: jwt_secrets.yml
+
 - name: 'Install git'
   ansible.builtin.package:
     name: 'git'
@@ -80,12 +80,14 @@
     mode: 0600
   notify: "Restart gitea"
 
-- name: "Service gitea"
+- name: "Service gitea enable"
   ansible.builtin.service:
     name: gitea
-    state: started
     enabled: true
-  when: ansible_service_mgr == "systemd"
+  when: (ansible_service_mgr == "systemd") or (ansible_service_mgr == "openrc")
 
-- include: fail2ban.yml
+- include_tasks: create_gitea_firstuser.yml
+  when: gitea_create_firstuser_enabled|bool
+
+- include_tasks: fail2ban.yml
   when: gitea_fail2ban_enabled|bool

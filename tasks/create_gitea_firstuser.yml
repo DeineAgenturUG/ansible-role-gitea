@@ -1,0 +1,7 @@
+---
+- name: "Create first admin user"
+  ansible.builtin.shell: "echo 'not implemented yet'"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  failed_when: false
